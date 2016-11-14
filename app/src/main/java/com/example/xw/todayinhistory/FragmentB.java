@@ -2,22 +2,139 @@ package com.example.xw.todayinhistory;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jude.easyrecyclerview.EasyRecyclerView;
+import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
+
+import java.util.List;
+
+import RetrofitService.GankService;
+import adapter.PictureRecyclerAdapter;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import model.Girls;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+
 /**
  * Created by xw on 2016/11/11.
  */
 public class FragmentB extends Fragment {
+    public static final String GANK_URL = "http://gank.io/api/";
+    private PictureRecyclerAdapter adapter;
+    private int page = 1;
+   // @BindView(R.id.pic_recycler_view)
+    EasyRecyclerView pictureRecyclerView;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        TextView tv=new TextView(getActivity());
-        tv.setText("222");
+        View view = inflater.inflate(R.layout.girls_fragment,container,false);
+       // ButterKnife.bind(this,view);
+        pictureRecyclerView= (EasyRecyclerView) view.findViewById(R.id.pic_recycler_view);
+       pictureRecyclerView.setRefreshing(true);
+        pictureRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
+        adapter = new PictureRecyclerAdapter(getActivity());
+        /* 设置延迟1秒后显示内容 */
+        pictureRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getPictureDatas();
+            }
+        },1000);
+        pictureRecyclerView.setAdapter(adapter);
+        /* 设置下拉刷新动作 */
+        pictureRecyclerView.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                pictureRecyclerView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.clear();
+                        page = 1;
+                        getPictureDatas();
+                    }
+                },1000);
 
-        return tv;
+            }
+        });
+        /* 上拉加载更多 */
+        adapter.setMore(R.layout.progress_wheel, new RecyclerArrayAdapter.OnMoreListener() {
+            @Override
+            public void onMoreShow() {
+                pictureRecyclerView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getPictureDatas();
+                    }
+                }, 1000);
+            }
+
+            @Override
+            public void onMoreClick() {
+
+            }
+        });
+     /*   adapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Intent intent = new Intent(getActivity(), BitmapActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("PicUrl",adapter.getAllData().get(position).getUrl());
+                bundle.putString("PicId",adapter.getAllData().get(position).get_id());
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });*/
+        return view;
+    }
+    private void getPictureDatas(){
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(GANK_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+        GankService gankService = retrofit.create(GankService.class);
+        gankService.getPictures(20,page)
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<Girls, List<Girls.ResultsBean>>() {
+                    @Override
+                    public List<Girls.ResultsBean> call(Girls girls) {
+                        return girls.getResults();
+                    }
+                }).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<Girls.ResultsBean>>() {
+                    @Override
+                    public void onCompleted() {
+                        pictureRecyclerView.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        pictureRecyclerView.setRefreshing(false);
+                        Snackbar.make(pictureRecyclerView, "出错了",Snackbar.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onNext(List<Girls.ResultsBean> resultsBeen) {
+                        adapter.addAll(resultsBeen);
+                    }
+                });
+        page++;
     }
 }
