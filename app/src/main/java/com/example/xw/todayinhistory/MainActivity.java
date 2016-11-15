@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationBar
                 .addItem(new BottomNavigationItem(R.drawable.history, "历史"))
                 .addItem(new BottomNavigationItem(R.drawable.girls, "美女"))
-                .addItem(new BottomNavigationItem(R.drawable.mine, "收藏"))
+                .addItem(new BottomNavigationItem(R.drawable.news, "新闻"))
                 .initialise();
         mFragmentManager = getSupportFragmentManager();
         Fragment fragment = mFragmentManager.findFragmentById(R.id.container);

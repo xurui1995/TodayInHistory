@@ -1,5 +1,6 @@
 package com.example.xw.todayinhistory;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -37,15 +38,14 @@ public class FragmentB extends Fragment {
     public static final String GANK_URL = "http://gank.io/api/";
     private PictureRecyclerAdapter adapter;
     private int page = 1;
-   // @BindView(R.id.pic_recycler_view)
+    @BindView(R.id.pic_recycler_view)
     EasyRecyclerView pictureRecyclerView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.girls_fragment,container,false);
-       // ButterKnife.bind(this,view);
-        pictureRecyclerView= (EasyRecyclerView) view.findViewById(R.id.pic_recycler_view);
+       ButterKnife.bind(this,view);
        pictureRecyclerView.setRefreshing(true);
         pictureRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
         adapter = new PictureRecyclerAdapter(getActivity());
@@ -89,7 +89,7 @@ public class FragmentB extends Fragment {
 
             }
         });
-     /*   adapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 Intent intent = new Intent(getActivity(), BitmapActivity.class);
@@ -99,7 +99,7 @@ public class FragmentB extends Fragment {
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
-        });*/
+        });
         return view;
     }
     private void getPictureDatas(){
