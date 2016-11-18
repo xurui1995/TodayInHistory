@@ -110,6 +110,7 @@ public class FragmentA extends Fragment {
                     public void onNext(List<Histories.HistoryBean> historyBeans) {
 
                         adapter = new HistoryRecyclerAdapter(getActivity(), historyBeans);
+                        
                     }
                 });
 
