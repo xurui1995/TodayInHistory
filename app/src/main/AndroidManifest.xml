@@ -23,7 +23,7 @@
         </activity>
         <activity android:name=".DetailActivity"/>
         <activity android:name=".BitmapActivity"/>
-        <activity android:name=".HistoryEvent">
+        <activity android:name=".HistoryEventActivity">
         </activity>
     </application>
 

@@ -4,9 +4,14 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,12 +25,28 @@ public class HistoryEventActivity extends AppCompatActivity {
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.event_tool_bar)
     Toolbar mToolbar;
+
+    Bundle bundle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_history_event);
         ButterKnife.bind(this);
-        mCollapsingToolbarLayout.setTitle("xiangqing");
+        bundle = getIntent().getExtras();
+        initView();
+
+    }
+
+    private void initView() {
+        mCollapsingToolbarLayout.setTitle(bundle.getString("Title"));
+
+        if (!TextUtils.isEmpty(bundle.getString("PicUrl"))){
+
+                Glide.with(this).load(bundle.getString("PicUrl"))
+                        .error(R.drawable.nopic)
+                        .into(mImageView);
+        }
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {

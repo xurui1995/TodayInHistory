@@ -17,6 +17,7 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleTextAppearance="@style/CollapsTitleText"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <ImageView

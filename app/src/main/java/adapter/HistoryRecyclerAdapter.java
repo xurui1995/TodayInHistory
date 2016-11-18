@@ -25,7 +25,10 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     private List<Histories.HistoryBean> datas;
     private Context context;
     public static final String TAG = "HisAdapter";
-
+    private OnHistoryItemClickListener mOnHistoryItemClickListener;
+    public void setOnHistoryItemClickListener(OnHistoryItemClickListener onHistoryItemClickListener){
+        mOnHistoryItemClickListener=onHistoryItemClickListener;
+    }
     public HistoryRecyclerAdapter(Context context, List<Histories.HistoryBean> datas) {
         this.context = context;
         this.datas = datas;
@@ -37,7 +40,7 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final  int position) {
         Histories.HistoryBean bean=datas.get(position);
         holder.title.setText(bean.getTitle());
         holder.content.setText(bean.getYear()+"-"+bean.getMonth()+"-"+bean.getDay());
@@ -46,6 +49,14 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
                     .error(R.drawable.nopic)
                     .into(holder.imageView);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mOnHistoryItemClickListener!=null){
+                    mOnHistoryItemClickListener.onItemClick(holder.itemView,datas.get(position));
+                }
+            }
+        });
     }
 
     @Override
@@ -65,5 +76,9 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnHistoryItemClickListener{
+        void onItemClick(View view, Histories.HistoryBean bean);
     }
 }

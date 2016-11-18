@@ -1,5 +1,6 @@
 package com.example.xw.todayinhistory;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -110,7 +111,16 @@ public class FragmentA extends Fragment {
                     public void onNext(List<Histories.HistoryBean> historyBeans) {
 
                         adapter = new HistoryRecyclerAdapter(getActivity(), historyBeans);
-                        
+                        adapter.setOnHistoryItemClickListener(new HistoryRecyclerAdapter.OnHistoryItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, Histories.HistoryBean bean) {
+                                Intent intent = new Intent(getActivity(),HistoryEventActivity.class);
+                                intent.putExtra("PicUrl",bean.getPic());
+                                intent.putExtra("ID",bean.getId());
+                                intent.putExtra("Title",bean.getTitle());
+                                startActivity(intent);
+                            }
+                        });
                     }
                 });
 
