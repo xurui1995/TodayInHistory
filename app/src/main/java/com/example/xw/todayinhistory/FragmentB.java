@@ -111,7 +111,7 @@ public class FragmentB extends Fragment {
                 .build();
         GankService gankService = retrofit.create(GankService.class);
         gankService.getPictures(20,page)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .map(new Func1<Girls, List<Girls.ResultsBean>>() {
                     @Override
                     public List<Girls.ResultsBean> call(Girls girls) {

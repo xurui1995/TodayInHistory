@@ -47,6 +47,7 @@ public class FragmentC extends Fragment {
         final View view = inflater.inflate(R.layout.news_fragment, container, false);
         ButterKnife.bind(this,view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         getDatas();
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         /* 设置下拉刷新 */
@@ -78,7 +79,7 @@ public class FragmentC extends Fragment {
                 .build();
         NewsService newsService = retrofit.create(NewsService.class);
         Observable<News> newsObservable = newsService.getNewsDatas(APIKEY, "30",page);
-        newsObservable.subscribeOn(Schedulers.io())    /*指定Observable的执行环境*/
+        newsObservable.subscribeOn(Schedulers.newThread())    /*指定Observable的执行环境*/
                 .map(new Func1<News, List<News.NewslistBean>>() {
                     @Override
                     public List<News.NewslistBean> call(News news) {

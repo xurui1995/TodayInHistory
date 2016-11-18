@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.List;
 
 import RetrofitService.HistoriesService;
@@ -42,7 +43,8 @@ public class FragmentA extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
 
     private HistoryRecyclerAdapter adapter;
-
+    private int month;
+    private int day;
     public static final String BASE_URL = "http://api.juheapi.com/";
     public static final String APIKEY = "c19d9cb3c78b1e3e4a4654ae7edd7183";
     @Nullable
@@ -51,7 +53,9 @@ public class FragmentA extends Fragment {
     View view=inflater.inflate(R.layout.history_fragment,container,false);
         ButterKnife.bind(this,view);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-
+        Calendar c = Calendar.getInstance();
+        month=c.get(Calendar.MONTH);
+        day=c.get(Calendar.DAY_OF_MONTH);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         swipeRefreshLayout.setRefreshing(true);
 
@@ -80,7 +84,7 @@ public class FragmentA extends Fragment {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
         HistoriesService historiesService=retrofit.create(HistoriesService.class);
-        Observable<Histories> observable=historiesService.getHistoriesDatas("1.0",11,15,APIKEY);
+        Observable<Histories> observable=historiesService.getHistoriesDatas("1.0",month+1,day,APIKEY);
         observable.subscribeOn(Schedulers.io())
                 .map(new Func1<Histories, List<Histories.HistoryBean>>() {
                     @Override
